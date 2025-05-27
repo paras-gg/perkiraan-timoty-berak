@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Perkiraan timoty berak</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #181c24;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: #f1f1f1;
+    }
+    .container {
+      background: #23272f;
+      padding: 2rem 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+      max-width: 350px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 0.7rem;
+      font-weight: 700;
+      color: #7ddaff;
+      font-size: 1.3rem;
+      letter-spacing: 0.5px;
+    }
+    .description {
+      font-size: 0.95rem;
+      color: #b0b8c1;
+      margin-bottom: 1.2rem;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      text-align: left;
+    }
+    label {
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+      color: #b0b8c1;
+      font-size: 0.98rem;
+    }
+    input[type="time"], select {
+      width: 100%;
+      padding: 0.55rem 0.9rem;
+      border-radius: 8px;
+      border: none;
+      background: #23272f;
+      color: #f1f1f1;
+      font-size: 1rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+      outline: 1.5px solid #31343b;
+      transition: outline-color 0.2s;
+    }
+    input[type="time"]:focus, select:focus {
+      outline-color: #7ddaff;
+    }
+    button {
+      margin-top: 0.5rem;
+      background: linear-gradient(90deg, #7ddaff 0%, #3a8dde 100%);
+      color: #181c24;
+      border: none;
+      padding: 0.8rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.08rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+      transition: background 0.2s, color 0.2s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #3a8dde 0%, #7ddaff 100%);
+      color: #fff;
+    }
+    .result {
+      margin-top: 1.5rem;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #7ddaff;
+      background: #23272f;
+      border-radius: 8px;
+      padding: 1rem 0.5rem 0.7rem 0.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+      min-height: 2.2rem;
+    }
+    ::selection {
+      background: #3a8dde;
+      color: #fff;
+    }
+    .fototimo {
+      display: block;
+      margin: 0.5rem auto 1.1rem auto;
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 50%;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+      border: 3px solid #31343b;
+      background: #23272f;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Perkiraan timoty berak</h1>
+  <img src="./timo.jpeg" alt="timo" class="fototimo">
+  <p class="description">Isi survei berikut sesuai informasi yang anda temukan.</p>
+  <form id="surveyForm">
+    <label for="mealTime">Jam berapa timoty makan:</label>
+    <input type="time" id="mealTime" name="mealTime" required />
+
+    <label for="fiberIntake">Apakah makanan nya ada serat nya(Ya/Tidak):</label>
+    <select id="fiberIntake" name="fiberIntake" required>
+      <option value="">-- Pilih --</option>
+      <option value="yes">Ya</option>
+      <option value="no">Tidak</option>
+    </select>
+
+    <button type="submit">Perkirakan timoty berak</button>
+  </form>
+  <div class="result" id="result"></div>
+</div>
+<script>
+  const form = document.getElementById('surveyForm');
+  const resultDiv = document.getElementById('result');
+
+  function addMinutes(time, minsToAdd) {
+    const [hours, minutes] = time.split(':').map(Number);
+    const totalMins = hours * 60 + minutes + minsToAdd;
+    let newHours = Math.floor(totalMins / 60) % 24;
+    let newMinutes = totalMins % 60;
+    return `${String(newHours).padStart(2,'0')}:${String(newMinutes).padStart(2,'0')}`;
+  }
+
+  function getCurrentTime() {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const age = 25;
+    const mealTime = form.mealTime.value;
+    const wakeTime = "09:00";
+    const fiberIntake = form.fiberIntake.value;
+    const nowTime = getCurrentTime();
+
+
+    let estimatedInMins = 120;
+
+    if(age < 30) estimatedInMins -= 20;
+    else if(age > 50) estimatedInMins += 30;
+
+    if(fiberIntake === 'yes') estimatedInMins -= 30;
+
+    function timeToMinutes(t) {
+      const [h, m] = t.split(':').map(Number);
+      return h * 60 + m;
+    }
+    const mealMins = timeToMinutes(mealTime);
+    const wakeMins = timeToMinutes(wakeTime);
+    let diffWakeMeal = (mealMins - wakeMins + 1440) % 1440; 
+    if(diffWakeMeal >= 0 && diffWakeMeal <= 180) {
+      estimatedInMins -= 20;
+    }
+
+    estimatedInMins = Math.min(Math.max(estimatedInMins, 30), 240);
+
+    const estimatedBMTime = addMinutes(mealTime, estimatedInMins);
+
+    resultDiv.innerHTML = 
+      `timoty akan berak jam <strong>${estimatedBMTime}</strong>.<br/>` +
+      `Waktu saat ini: <strong>${nowTime}</strong>.`;
+  });
+</script>
+</body>
+</html>
+
